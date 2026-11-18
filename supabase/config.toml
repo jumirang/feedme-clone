@@ -1,0 +1,8 @@
+#:schema https://supabase.com/schemas/config/v1.json
+# 원격 프로젝트에 `supabase config push`로 반영할 항목만 선언한다.
+# 선언하지 않은 항목은 원격 값이 그대로 유지된다.
+project_id = "feedme-clone"
+
+[auth.email]
+# 수업용이라 이메일 인증을 끈다. 가입하면 바로 세션이 만들어진다.
+enable_confirmations = false
