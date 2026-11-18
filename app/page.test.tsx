@@ -1,16 +1,19 @@
 import { render, screen } from "@testing-library/react";
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 
 import Home from "@/app/page";
 
-test("홈 화면은 시작 안내 제목과 배포 링크를 보여준다", () => {
+vi.mock("next-themes", () => ({ useTheme: () => ({ setTheme: vi.fn() }) }));
+
+test("첫 화면은 서비스 이름, 부제, URL 입력, 빈 결과 안내를 보여준다", () => {
   render(<Home />);
 
   expect(
-    screen.getByRole("heading", { level: 1, name: /To get started/i })
+    screen.getByRole("heading", { level: 1, name: "FEED-ME" }),
   ).toBeInTheDocument();
-  expect(screen.getByRole("link", { name: /Deploy Now/i })).toHaveAttribute(
-    "href",
-    expect.stringContaining("vercel.com/new")
-  );
+  expect(screen.getByText("어떤 URL이든, Markdown으로.")).toBeInTheDocument();
+  expect(screen.getByLabelText("변환할 URL")).toBeInTheDocument();
+  expect(
+    screen.getByText("변환한 페이지가 여기에 나타납니다"),
+  ).toBeInTheDocument();
 });
