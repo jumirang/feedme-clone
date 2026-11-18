@@ -1,10 +1,11 @@
+"use client";
+
+import { SaveButton } from "@/features/saved-articles/save-button";
 import { Converter } from "@/features/url-to-markdown/converter";
-import { ThemeToggle } from "@/features/url-to-markdown/theme-toggle";
 
 export default function Home() {
   return (
-    <main className="relative mx-auto w-full max-w-[680px] px-4 pt-14 pb-12">
-      <ThemeToggle />
+    <main className="mx-auto w-full max-w-[680px] px-4 pt-8 pb-12">
       <header>
         <h1 className="text-4xl leading-tight font-extrabold tracking-tight sm:text-5xl">
           FEED-ME
@@ -13,7 +14,7 @@ export default function Home() {
           어떤 URL이든, Markdown으로.
         </p>
       </header>
-      <Converter />
+      <Converter renderActions={(page) => <SaveButton page={page} />} />
     </main>
   );
 }

@@ -21,7 +21,7 @@ export function isHttpUrl(value: string) {
   return /^https?:\/\/[^\s/$.?#].[^\s]*$/i.test(value);
 }
 
-export function displayTitle(page: Page) {
+export function displayTitle(page: Pick<Page, "url" | "title">) {
   if (page.title) return page.title;
   try {
     return new URL(page.url).hostname;
