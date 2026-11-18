@@ -12,7 +12,6 @@ export function ThemeToggle() {
     <Button
       variant="ghost"
       size="icon"
-      className="absolute top-3 right-4"
       aria-label="테마 전환"
       title="테마 전환"
       onClick={() =>

@@ -1,7 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-// 세션 쿠키를 갱신하고, 로그인하지 않은 사용자가 /settings에 접근하면 로그인 화면으로 보낸다.
+// 세션 쿠키를 갱신하고, 로그인하지 않은 사용자가 보호된 화면에 접근하면 로그인 화면으로 보낸다.
+const PROTECTED_PATHS = ["/settings", "/saved"];
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
 
@@ -29,7 +31,11 @@ export async function updateSession(request: NextRequest) {
   // createServerClient와 getClaims 사이에 다른 코드를 두지 않는다.
   const { data } = await supabase.auth.getClaims();
 
-  if (!data?.claims && request.nextUrl.pathname.startsWith("/settings")) {
+  const { pathname } = request.nextUrl;
+  const isProtected = PROTECTED_PATHS.some(
+    (path) => pathname === path || pathname.startsWith(`${path}/`),
+  );
+  if (!data?.claims && isProtected) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     url.search = "";

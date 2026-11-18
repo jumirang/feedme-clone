@@ -6,7 +6,7 @@ import {
   Loader2Icon,
   XIcon,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useRef, useState, type ReactNode } from "react";
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
@@ -24,15 +24,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 
-import { displayTitle, isHttpUrl, type Page } from "./document";
-import { ExportActions } from "./export-actions";
-import { MarkdownView } from "./markdown-view";
-import {
-  EMPTY_PROMPT,
-  PromptPicker,
-  promptText,
-  type PromptState,
-} from "./prompt-picker";
+import { ArticleView } from "./article-view";
+import { isHttpUrl, type Page } from "./document";
 
 type View =
   | { kind: "idle" }
@@ -40,11 +33,15 @@ type View =
   | { kind: "error"; title: string; description: string }
   | { kind: "result"; page: Page };
 
-export function Converter() {
+// renderActions는 변환 결과의 내보내기 버튼 앞에 놓일 액션을 만든다.
+export function Converter({
+  renderActions,
+}: {
+  renderActions?: (page: Page) => ReactNode;
+}) {
   const [url, setUrl] = useState("");
   const [invalid, setInvalid] = useState(false);
   const [view, setView] = useState<View>({ kind: "idle" });
-  const [prompt, setPrompt] = useState<PromptState>(EMPTY_PROMPT);
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
   const loading = view.kind === "loading";
@@ -54,7 +51,6 @@ export function Converter() {
     setUrl("");
     setInvalid(false);
     setView({ kind: "idle" });
-    setPrompt(EMPTY_PROMPT);
     inputRef.current?.focus();
   }
 
@@ -66,7 +62,6 @@ export function Converter() {
       setInvalid(true);
       return;
     }
-    setPrompt(EMPTY_PROMPT);
     setView({ kind: "loading" });
     const controller = new AbortController();
     abortRef.current = controller;
@@ -179,26 +174,7 @@ export function Converter() {
       )}
 
       {view.kind === "result" && (
-        <article>
-          <header className="flex flex-col gap-1">
-            <h2 className="text-[21px] leading-snug font-bold tracking-tight break-keep [overflow-wrap:anywhere] sm:text-[26px]">
-              {displayTitle(view.page)}
-            </h2>
-            {view.page.author && (
-              <p className="text-sm text-muted-foreground">
-                By {view.page.author}
-              </p>
-            )}
-            <div className="mt-1 flex flex-col gap-1">
-              <div className="flex justify-end">
-                <ExportActions page={view.page} prompt={promptText(prompt)} />
-              </div>
-              <PromptPicker value={prompt} onChange={setPrompt} />
-            </div>
-          </header>
-          <Separator className="my-8" />
-          <MarkdownView markdown={view.page.markdown} />
-        </article>
+        <ArticleView page={view.page} actions={renderActions?.(view.page)} />
       )}
     </>
   );
